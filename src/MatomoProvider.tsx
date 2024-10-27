@@ -41,7 +41,7 @@ const MatomoProvider: React.FC<MatomoProviderProps> = function ({ children }) {
       isLinkTrackingEnabled,
       setIsLinkTrackingEnabled,
     }),
-    [matomo, isLinkTrackingEnabled],
+    [matomo, isInitialized, isLinkTrackingEnabled],
   )
 
   return (
