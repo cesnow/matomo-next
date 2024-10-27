@@ -13,7 +13,7 @@ import {
   TrackSiteSearchParams,
   UserOptions,
 } from './types'
-import { WindowMatomoTracker } from './matomo.types'
+import { WindowMatomoInstance } from './matomo.types'
 
 class MatomoTracker implements MatomoInstance {
   private mutationObserver?: MutationObserver
@@ -504,7 +504,7 @@ class MatomoTracker implements MatomoInstance {
   }
 
   // Adds a new tracker
-  addTracker(tracker: WindowMatomoTracker): void {
+  addTracker(tracker: WindowMatomoInstance): void {
     this.pushInstruction('addTracker', tracker)
   }
 

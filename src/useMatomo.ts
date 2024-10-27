@@ -8,11 +8,11 @@ import {
   TrackSiteSearchParams,
 } from './types'
 import useOutboundClickListener from './utils/useOutboundClickListener'
-import { WindowMatomoTracker } from './matomo.types'
+import { WindowMatomoInstance } from './matomo.types'
 
 function useMatomo() {
   const {
-    isReady,
+    isInitialized,
     instance,
     setInstance,
     isLinkTrackingEnabled,
@@ -44,7 +44,7 @@ function useMatomo() {
   )
 
   const addTracker = useCallback(
-    (tracker: WindowMatomoTracker) => {
+    (tracker: WindowMatomoInstance) => {
       instance.addTracker(tracker)
     },
     [instance],

@@ -1,4 +1,4 @@
-import { WindowMatomo, WindowMatomoTracker } from './matomo.types'
+import { WindowMatomo, WindowMatomoInstance } from './matomo.types'
 
 export interface MatomoInstance {
   trackEvent: ({
@@ -17,7 +17,7 @@ export interface MatomoInstance {
     ...otherParams
   }: TrackSiteSearchParams) => void
   trackLink: ({ href, linkType }: TrackLinkParams) => void
-  addTracker: (tracker: WindowMatomoTracker) => void
+  addTracker: (tracker: WindowMatomoInstance) => void
   enableFileTracking: () => void
   forgetCookieConsentGiven: () => void
   requireCookieConsent: () => void
