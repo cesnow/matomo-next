@@ -2,7 +2,7 @@ import { createContext, Dispatch, SetStateAction } from 'react'
 import { MatomoInstance } from './types'
 
 export type MatomoContextType = {
-  isReady: boolean
+  isInitialized: boolean
   isLinkTrackingEnabled: boolean
   setIsLinkTrackingEnabled: Dispatch<SetStateAction<boolean>>
   instance: MatomoInstance

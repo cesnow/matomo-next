@@ -236,7 +236,7 @@ function useMatomo() {
   )
 
   return {
-    isReady,
+    isInitialized,
     instance,
     setInstance,
     trackEvent,

@@ -7,19 +7,32 @@ export interface MatomoProviderProps {
 }
 
 const MatomoProvider: React.FC<MatomoProviderProps> = function ({ children }) {
-  const [isReady, setIsReady] = useState<boolean>(false)
+  const [isInitialized, setIsInitialized] = useState<boolean>(false)
   const [matomo, setMatomo] = useState<MatomoInstance>(null!)
   const [isLinkTrackingEnabled, setIsLinkTrackingEnabled] =
     useState<boolean>(false)
 
   const setMatomoInstance = (instance: MatomoInstance) => {
     setMatomo(instance)
-    setIsReady(true)
+
+    const checkMatomo = (): boolean => {
+      if (window.Matomo) {
+        setIsInitialized(true) // Matomo is initialized, update state
+        return true
+      }
+      return false
+    }
+
+    let interval = setInterval(() => {
+      if (checkMatomo()) {
+        clearInterval(interval)
+      }
+    }, 500)
   }
 
   const value: MatomoContextType = useMemo(
     () => ({
-      isReady,
+      isInitialized,
       instance: matomo,
       setInstance: setMatomoInstance,
       isLinkTrackingEnabled,
