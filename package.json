@@ -1,6 +1,6 @@
 {
   "name": "@cesnow/matomo-next",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Matomo integration for next.js projects",
   "source": "./src/index.ts",
   "main": "./dist/cjs/index.js",
@@ -46,7 +46,7 @@
     "clean": "rm -rf dist",
     "prettier": "prettier --write ./src/**/**/*.{ts,tsx}",
     "clean:generated": "find . -name \"*.d.ts\" -type f -delete && find . -name \"*.tsbuildinfo\" -type f -delete",
-    "start": "yarn build:ts -- --watch & yarn build:ts:es -- --watch",
+    "start": "yarn build:cjs -- --watch & yarn build:esm -- --watch",
     "prepublishOnly": "yarn build"
   },
   "devDependencies": {

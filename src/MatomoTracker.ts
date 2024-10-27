@@ -1,8 +1,9 @@
 import { TRACK_TYPES } from './constants'
 import {
   AddEcommerceItemParams,
-  RemoveEcommerceItemParams,
   CustomDimension,
+  MatomoInstance,
+  RemoveEcommerceItemParams,
   SetEcommerceViewParams,
   TrackEcommerceOrderParams,
   TrackEventParams,
@@ -11,8 +12,8 @@ import {
   TrackParams,
   TrackSiteSearchParams,
   UserOptions,
-  MatomoInstance,
 } from './types'
+import { WindowMatomoTracker } from './matomo.types'
 
 class MatomoTracker implements MatomoInstance {
   private mutationObserver?: MutationObserver
@@ -104,12 +105,19 @@ class MatomoTracker implements MatomoInstance {
     }
   }
 
+  // Install a Heart beat timer that will send additional requests to Matomo in order to better measure the time spent in the visit.
   enableHeartBeatTimer(seconds: number): void {
     this.pushInstruction('enableHeartBeatTimer', seconds)
   }
 
+  // Install link tracking on all applicable link elements.
   enableLinkTracking(active: boolean): void {
     this.pushInstruction('enableLinkTracking', active)
+  }
+
+  // Enable tracking of file:// protocol actions. By default, the file:// protocol is not tracked.
+  enableFileTracking(): void {
+    this.pushInstruction('enableFileTracking')
   }
 
   private trackEventsForElements(elements: HTMLElement[]) {
@@ -330,8 +338,174 @@ class MatomoTracker implements MatomoInstance {
     return this
   }
 
+  // Sets a User ID to this user (such as an email address or a username).
   pushUserId(userId: string): void {
     this.pushInstruction('setUserId', userId)
+  }
+
+  // Specify the website ID. Redundant: can be specified in getTracker() constructor.
+  pushSiteId(siteId: number): void {
+    this.pushInstruction('setSiteId', siteId)
+  }
+
+  // Set array of hostnames or domains to be treated as local.
+  //   For wildcard subdomains, you can use: setDomains('.example.com'); or setDomains('*.example.com');.
+  //   You can also specify a path along a domain: setDomains('*.example.com/subsite1');
+  pushDomains(domains: string[]): void {
+    this.pushInstruction('setDomains', domains)
+  }
+
+  // visitorId needs to be a 16 digit hex string.
+  // The visitorId won't be persisted in a cookie and needs to be set on every new page load.
+  pushVisitorId(visitorId: string): void {
+    const hexRegex = /^[0-9a-fA-F]{16}$/
+    if (!hexRegex.test(visitorId)) {
+      throw new Error('visitorId must be a 16 digit hex string.')
+    }
+    this.pushInstruction('setVisitorId', visitorId)
+  }
+
+  // Specify the Matomo server URL. Redundant: can be specified in getTracker() constructor.
+  pushTrackerUrl(trackerUrl: string): void {
+    this.pushInstruction('setTrackerUrl', trackerUrl)
+  }
+
+  // Specify the Matomo HTTP API URL endpoint.
+  pushApiUrl(apiUrl: string): void {
+    this.pushInstruction('setApiUrl', apiUrl)
+  }
+
+  // Set the cross domain linking timeout (in seconds).
+  // By default, the two visits across domains will be linked together when the link is clicked and the page is loaded within a 180 seconds timeout window.`
+  pushCrossDomainLinkingTimeout(timeout: number): void {
+    this.pushInstruction('setCrossDomainLinkingTimeout', timeout)
+  }
+
+  // the default is 13 months
+  pushVisitorCookieTimeout(seconds: number): void {
+    this.pushInstruction('setVisitorCookieTimeout', seconds)
+  }
+
+  // the default is 6 months
+  pushReferralCookieTimeout(seconds: number): void {
+    this.pushInstruction('setReferralCookieTimeout', seconds)
+  }
+
+  // the default is 30 minutes
+  pushSessionCookieTimeout(seconds: number): void {
+    this.pushInstruction('setSessionCookieTimeout', seconds)
+  }
+
+  // set to true to enable the Secure cookie flag on all first party cookies.
+  // This should be used when your website is only available under HTTPS so that all tracking cookies are always sent over secure connection.
+  pushSecureCookie(secure: boolean): void {
+    this.pushInstruction('setSecureCookie', secure)
+  }
+
+  // the default prefix is _pk_.
+  pushCookieNamePrefix(prefix: string): void {
+    this.pushInstruction('setCookieNamePrefix', prefix)
+  }
+
+  // the default is the document domain;
+  //  if your website can be visited at both www.example.com and example.com,
+  //  you would use: tracker.setCookieDomain('.example.com');
+  //  or tracker.setCookieDomain('*.example.com');
+  pushCookieDomain(domain: string): void {
+    this.pushInstruction('setCookieDomain', domain)
+  }
+
+  // the default is '/'.
+  pushCookiePath(path: string): void {
+    this.pushInstruction('setCookiePath', path)
+  }
+
+  // defaults to Lax. Can be set to None or Strict.
+  //  None requires all traffic to be on HTTPS and will also automatically set the secure cookie. It can be useful for example if the tracked website is an iframe. Strict only works if your Matomo and the website runs on the very same domain.
+  pushCookieSameSite(string: string): void {
+    this.pushInstruction('setCookieSameSite', string)
+  }
+
+  // Mark that the current user has consented to using cookies.
+  //  The consent is one-time only, so in a subsequent browser session, the user will have to consent again. To remember cookie consent, see the method below: rememberCookieConsentGiven.
+  pushCookieConsentGiven(): void {
+    this.pushInstruction('setCookieConsentGiven')
+  }
+
+  // Mark that the current user has consented.
+  //  The consent is one-time only, so in a subsequent browser session, the user will have to consent again. To remember consent, see the method below: rememberConsentGiven.
+  pushConsentGiven(): void {
+    this.pushInstruction('setConsentGiven')
+  }
+
+  // Manually set performance metrics in milliseconds in a Single Page App or when Matomo cannot detect some metrics.
+  //  args: ([networkTimeInMs], [serverTimeInMs], [transferTimeInMs], [domProcessingTimeInMs], [domCompletionTimeInMs], [onloadTimeInMs])
+  pushPagePerformanceTiming(...args: number[]): void {
+    this.pushInstruction('setPagePerformanceTiming', ...args)
+  }
+
+  // Set array of hostnames or domains that should be ignored as referrers.
+  pushExcludedReferrers(domains: string | string[]): void {
+    if (typeof domains === 'string') {
+      domains = [domains]
+    }
+    this.pushInstruction('setExcludedReferrers', domains)
+  }
+
+  // Remove a user's cookie consent, both if the consent was one-time only and if the consent was remembered.
+  forgetCookieConsentGiven(): void {
+    this.pushInstruction('forgetCookieConsentGiven')
+  }
+
+  // By default, the Matomo tracker assumes consent to using cookies.
+  //  To change this behavior so no cookies are used by default, you must call requireCookieConsent.
+  requireCookieConsent(): void {
+    this.pushInstruction('requireCookieConsent')
+  }
+
+  // By default, Matomo accesses information from the visitor's browser to detect the current browser resolution and what browser plugins (for example PDF and cookies) are supported.
+  disableBrowserFeatureDetection(): void {
+    this.pushInstruction('disableBrowserFeatureDetection')
+  }
+
+  // By default, Matomo will send campaign parameters (mtm, utm, etc.)
+  //  to the tracker and record that information.
+  disableCampaignParameters(): void {
+    this.pushInstruction('disableCampaignParameters')
+  }
+
+  // Disable all first party cookies.
+  //  Existing Matomo cookies for this website will be deleted on the next page view.
+  disableCookies(): void {
+    this.pushInstruction('disableCookies')
+  }
+
+  // Enable cross domain linking.
+  //  By default, the visitor ID that identifies a unique visitor is stored in the browser's first party cookies.
+  enableCrossDomainLinking(): void {
+    this.pushInstruction('enableCrossDomainLinking')
+  }
+
+  // Disables sending tracking requests using navigator.
+  //  sendBeacon which is enabled by default.
+  disableAlwaysUseSendBeacon(): void {
+    this.pushInstruction('disableAlwaysUseSendBeacon')
+  }
+
+  // By default, the Matomo tracker assumes consent to tracking.
+  //  To change this behavior so nothing is tracked until a user consents, you must call requireConsent.
+  requireConsent(): void {
+    this.pushInstruction('requireConsent')
+  }
+
+  // Disables page performance tracking.
+  disablePerformanceTracking(): void {
+    this.pushInstruction('disablePerformanceTracking')
+  }
+
+  // Adds a new tracker
+  addTracker(tracker: WindowMatomoTracker): void {
+    this.pushInstruction('addTracker', tracker)
   }
 
   // Sends the tracked page/view/search to Matomo

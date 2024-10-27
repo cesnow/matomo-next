@@ -1,3 +1,5 @@
+import { WindowMatomo, WindowMatomoTracker } from './matomo.types'
+
 export interface MatomoInstance {
   trackEvent: ({
     category,
@@ -15,9 +17,38 @@ export interface MatomoInstance {
     ...otherParams
   }: TrackSiteSearchParams) => void
   trackLink: ({ href, linkType }: TrackLinkParams) => void
+  addTracker: (tracker: WindowMatomoTracker) => void
+  enableFileTracking: () => void
+  forgetCookieConsentGiven: () => void
+  requireCookieConsent: () => void
+  disableBrowserFeatureDetection: () => void
+  disableCampaignParameters: () => void
+  disableCookies: () => void
+  enableCrossDomainLinking: () => void
+  disableAlwaysUseSendBeacon: () => void
+  requireConsent: () => void
+  disablePerformanceTracking: () => void
   pushCustomDimension: (dimension: CustomDimension) => MatomoInstance
   pushCustomDimensions: (dimensions: CustomDimension[]) => MatomoInstance
   pushUserId: (userId: string) => void
+  pushSiteId: (siteId: number) => void
+  pushDomains: (domains: string[]) => void
+  pushVisitorId: (visitorId: string) => void
+  pushTrackerUrl: (trackerUrl: string) => void
+  pushApiUrl: (apiUrl: string) => void
+  pushCrossDomainLinkingTimeout: (timeout: number) => void
+  pushVisitorCookieTimeout: (seconds: number) => void
+  pushReferralCookieTimeout: (seconds: number) => void
+  pushSessionCookieTimeout: (seconds: number) => void
+  pushSecureCookie: (secure: boolean) => void
+  pushCookieNamePrefix: (prefix: string) => void
+  pushCookieDomain: (domain: string) => void
+  pushCookiePath: (path: string) => void
+  pushCookieSameSite: (string: string) => void
+  pushCookieConsentGiven: () => void
+  pushConsentGiven: () => void
+  pushPagePerformanceTiming: (...args: number[]) => void
+  pushExcludedReferrers: (domains: string | string[]) => void
   pushInstruction: (name: string, ...args: any[]) => MatomoInstance
 }
 
@@ -106,5 +137,6 @@ export interface SetEcommerceViewParams {
 declare global {
   interface Window {
     _paq: [string, ...any[]][]
+    Matomo: WindowMatomo
   }
 }
