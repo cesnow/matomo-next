@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import MatomoContext, { MatomoContextType } from './MatomoContext'
 import { MatomoInstance } from './types'
 
@@ -12,29 +12,32 @@ const MatomoProvider: React.FC<MatomoProviderProps> = function ({ children }) {
   const [isLinkTrackingEnabled, setIsLinkTrackingEnabled] =
     useState<boolean>(false)
 
-  const setMatomoInstance = (instance: MatomoInstance) => {
-    setMatomo(instance)
+  useEffect(() => {
+    if (!matomo) return
 
-    const checkMatomo = (): boolean => {
+    const checkMatomo = () => {
       if (window.Matomo) {
-        setIsInitialized(true) // Matomo is initialized, update state
+        setIsInitialized(true)
         return true
       }
       return false
     }
 
-    let interval = setInterval(() => {
-      if (checkMatomo()) {
-        clearInterval(interval)
-      }
-    }, 500)
-  }
+    if (!checkMatomo()) {
+      let retryTimes: number = 0
+      const interval: NodeJS.Timeout = setInterval(() => {
+        if (checkMatomo() || retryTimes++ > 60) {
+          clearInterval(interval)
+        }
+      }, 500)
+    }
+  }, [matomo])
 
   const value: MatomoContextType = useMemo(
     () => ({
       isInitialized,
       instance: matomo,
-      setInstance: setMatomoInstance,
+      setInstance: setMatomo,
       isLinkTrackingEnabled,
       setIsLinkTrackingEnabled,
     }),
