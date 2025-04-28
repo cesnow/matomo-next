@@ -1,4 +1,6 @@
-import { useEffect } from 'react'
+'use client'
+
+import * as React from 'react'
 import { MatomoInstance } from '../types'
 
 const useOutboundClickListener = (
@@ -38,7 +40,7 @@ const useOutboundClickListener = (
     }
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!matomoInstance) return
     if (!isLinkTrackingEnabled) return
 

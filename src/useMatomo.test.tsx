@@ -1,5 +1,5 @@
 import { act, fireEvent, render, renderHook } from '@testing-library/react'
-import React, { useEffect } from 'react'
+import * as React from 'react'
 import MatomoProvider from './MatomoProvider'
 import useMatomo from './useMatomo'
 import MatomoTracker from './MatomoTracker'
@@ -10,7 +10,7 @@ describe('useMatomo', () => {
   const JustAComponent = function () {
     const { trackPageView, trackEvent, instance, setInstance } = useMatomo()
 
-    useEffect(() => {
+    React.useEffect(() => {
       const instance = new MatomoTracker({
         urlBase: 'https://LINK.TO.DOMAIN',
         siteId: 3, // optional, default value: `1`
