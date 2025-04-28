@@ -1,6 +1,6 @@
 {
   "name": "@cesnow/matomo-next",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Matomo integration for next.js projects",
   "source": "./src/index.ts",
   "main": "./dist/cjs/index.js",
